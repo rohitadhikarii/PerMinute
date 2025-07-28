@@ -3,19 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=yes">
-    <title>HippoType</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PerMinute - Typing Speed Test</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root{
+            --bgColor: #0f0f23;
+            --bgSecondary: #1a1a2e;
+            --textPrimary: #e0e0e0;
+            --textSecondary: #888;
+            --primaryColor: #00d4aa;
+            --secondaryColor: #ff6b6b;
+            --accentColor: #4ecdc4;
+            --cardBg: #16213e;
+            --borderColor: #2a2a3e;
+        }
+
+        body{
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bgColor) 0%, var(--bgSecondary) 100%);
+            color: var(--textPrimary);
+            font-size: 1.1rem;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        main{
+            max-width: 1200px;
+            width: 95%;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1{
+            color: var(--primaryColor);
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 20px 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+        }
+
+        h1 svg{
+            width: 45px;
+            height: 45px;
+            fill: var(--primaryColor);
+            filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4));
+        }
+
+        #header{
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin: 0 0 50px;
+            padding: 20px;
+            background: var(--cardBg);
+            border-radius: 16px;
+            border: 1px solid var(--borderColor);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #controls{
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        #info{
+            color: var(--primaryColor);
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0, 212, 170, 0.4);
+            min-width: 120px;
+        }
+
+        #buttons{
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button, select{
+            background: linear-gradient(135deg, var(--accentColor), var(--primaryColor));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);
+        }
+
+        button:hover, select:hover{
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 212, 170, 0.3);
+        }
+
+        button:active{
+            transform: translateY(0);
+        }
+
+        select{
+            padding: 10px 16px;
+            margin: 0;
+            background: var(--cardBg);
+            border: 2px solid var(--borderColor);
+            color: var(--textPrimary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        select:focus{
+            outline: none;
+            border-color: var(--primaryColor);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
+        div#game{
+            line-height: 50px;
+            min-height: 300px;
+            padding: 40px;
+            margin: 0 auto;
+            max-width: 900px;
+            overflow: hidden;
+            position: relative;
+            background: var(--cardBg);
+            border-radius: 20px;
+            border: 2px solid var(--borderColor);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        div#game:focus{
+            outline: none;
+            border-color: var(--primaryColor);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
+        #words{
+            filter: blur(8px);
+            color: var(--textSecondary);
+            font-size: 1.3rem;
+            transition: filter 0.3s ease;
+        }
+
+        #game:focus #words{
+            filter: blur(0);
+        }
+
+        #focus-error {
+            position: absolute;
+            inset: 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--textSecondary);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        #game:focus #focus-error{
+            display: none;
+        }
+
+        div.word{
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0 8px 10px 0;
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        .letter.correct{
+            color: var(--primaryColor);
+            text-shadow: 0 0 8px rgba(0, 212, 170, 0.4);
+        }
+
+        .letter.incorrect{
+            color: var(--secondaryColor);
+            background-color: rgba(255, 107, 107, 0.2);
+            border-radius: 4px;
+        }
+
+        @keyframes blink{
+            0%{ opacity: 1; }
+            50%{ opacity: 0; }
+            100%{ opacity: 1; }
+        }
+
+        @keyframes pulse{
+            0%{ box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.4); }
+            50%{ box-shadow: 0 0 0 10px rgba(0, 212, 170, 0); }
+            100%{ box-shadow: 0 0 0 0 rgba(0, 212, 170, 0); }
+        }
+
+        #cursor{
+            display: block;
+            width: 3px;
+            height: 1.8rem;
+            background: linear-gradient(to bottom, var(--primaryColor), var(--accentColor));
+            position: fixed;
+            top: 240px;
+            left: 60px;
+            animation: blink 1s infinite, pulse 2s infinite;
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(0, 212, 170, 0.6);
+        }
+
+        #game.over #cursor{
+            display: none;
+        }
+
+        #game.over #words{
+            opacity: 0.5;
+            filter: blur(0px);
+        }
+
+        #game.over #focus-error {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <main>
         <h1>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M584.2 96.36c-28.88-1.701-54.71 17.02-79.74 26.49C490 88.22 455.9 64 416 64c-11.25 0-22 2.252-32 5.877V56C384 42.75 373.2 32 360 32h-16C330.8 32 320 42.75 320 56v49C285.1 79.62 241.2 64 192 64C85.1 64 0 135.6 0 224v232C0 469.3 10.75 480 24 480h48C85.25 480 96 469.3 96 456v-62.87C128.4 407.5 166.8 416 208 416s79.63-8.492 112-22.87V456c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V288h128v32c0 8.837 7.163 16 16 16h32c8.837 0 16-7.163 16-16V288c17.62 0 32-14.38 32-32l-.0001-96.07C639.1 127.8 616.4 98.25 584.2 96.36zM447.1 176c-8.875 0-16-7.125-16-16S439.1 144 448 144s16 7.125 16 16S456.9 176 447.1 176z"/></svg>
-            HippoType
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --><path d="M256 512C114.6 512 0 397.4 0 256S114.6 0 256 0s256 114.6 256 256-114.6 256-256 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>
+            PerMinute
         </h1>
         <div id="header">
+            <div id="controls">
+                <select id="timeSelect">
+                    <option value="30">30 seconds</option>
+                    <option value="60">60 seconds</option>
+                </select>
+                <select id="complexitySelect">
+                    <option value="newbie">Newbie</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="master">Master</option>
+                </select>
+            </div>
             <div id="info"></div>
             <div id="buttons">
-                <button id="newGameBtn">New game</button>
+                <button id="newGameBtn">New Game</button>
             </div>
         </div>
         <div id="game" tabindex="0">
