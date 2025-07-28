@@ -26,31 +26,8 @@ A modern typing speed test application with multiple difficulty levels and custo
 - **Advanced**: Complex words requiring higher typing proficiency
 - **Master**: Professional-level vocabulary for expert typists
 
-## Running the Application
-
-### Option 1: Direct File Opening
-Open `index.html` directly in your web browser.
-
-### Option 2: Local Server
-For the best experience, serve the files using a local web server:
-
-```bash
-# Using Python
-python -m http.server 8000
-
-# Using Node.js
-npx serve .
-
-# Using PHP
-php -S localhost:8000
-```
-
-Then navigate to `http://localhost:8000` in your browser.
-
 ## Technical Details
 
 The application is built using vanilla HTML, CSS, and JavaScript with no external dependencies. All styling is embedded inline for optimal loading performance.
 
-## Browser Compatibility
 
-Compatible with all modern web browsers including Chrome, Firefox, Safari, and Edge.
